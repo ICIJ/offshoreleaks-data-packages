@@ -13,7 +13,7 @@
 :target-db-version: 4.2
 :bloom-perspective: bloom/icij-paradise-papers.bloom-perspective
 :guide: documentation/index.html
-:rendered-guide: https://guides.neo4j.com/sandbox/icij-paradise-papers/index.html
+:rendered-guide: https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/index.html
 :model: documentation/img/datamodel.png
 :example: documentation/img/example.png
 

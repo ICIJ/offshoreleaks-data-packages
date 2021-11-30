@@ -1,0 +1,11 @@
+{
+    "name": "icij-paradise-papers",
+    "description":"The Paradise Papers dataset and guide from the International Consortium of Investigative Journalists (ICIJ)",
+    "dbms": [
+        {
+            "dumpFile": "data/icij-paradise-papers-42.dump",
+            "targetNeo4jVersion": "4.0.* - 4.2.*",
+          "plugins": ["apoc", "graph-data-science"]
+        }
+    ]
+}

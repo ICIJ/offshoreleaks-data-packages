@@ -1,0 +1,16 @@
+{
+    "name": "icij-offshoreleaks",
+    "description":"The Offshore Leaks dataset and guide from the International Consortium of Investigative Journalists (ICIJ)",
+    "dbms": [
+        {
+            "dumpFile": "data/icij-offshoreleaks-42.dump",
+            "targetNeo4jVersion": "^4.2",
+            "plugins": ["apoc", "graph-data-science"]
+        },
+        {
+            "dumpFile": "data/icij-offshoreleaks-43.dump",
+            "targetNeo4jVersion": "^4.3",
+            "plugins": ["apoc", "graph-data-science"]
+        }
+    ]
+}

@@ -1,5 +1,5 @@
 <style type="text/css" media="screen">
-@import url("https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/styles/panama_guide.css");
+@import url("https://guides.neo4j.com/sandbox/icij-offshoreleaks/offshoreleaks_guide.css");
 </style>
 <article class="guide" ng-controller="AdLibDataController">
   <carousel class="deck container-fluid panama-deck">
@@ -14,17 +14,22 @@
 
   <div class="row">
     <div class="col-md-6">
-      <img class="img-responsive img-thumbnail" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel.png" alt="data model">
+      <img class="img-responsive img-thumbnail" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel.png" alt="data model">
     </div>
     <div class="col-md-6 col-sm-6">
 
 
       <div class="paragraph">
-        <p>The Offshore Leaks Database contains in a structured way the contents of the more than 3 million database files inside the Paradise and Panama Papers leaks and the client databases from the Offshore Leaks investigation.</p>
+        <p>The Offshore Leaks Database contains in a structured way the contents of the millions of database files 
+          inside the Pandora, Paradise and Panama Papers leaks and the client databases from the Offshore Leaks investigation.</p>
       </div>
 
       <div class="paragraph">
-        <p>The Offshore Leaks Database was imported into Neo4j to be used by journalists and researchers to take advantage of the connections in the data. To the left is the basic "property graph" data model. Each data record is called a "node" representing an entity, intermediary, officer or address. They're connected to form a "graph" that reveals a complex web of relationships. To the left you can see a simplified diagram how the nodes connect to each other.</p>
+        <p>The Offshore Leaks Database was imported into Neo4j to be used by journalists and researchers to take advantage of the connections in the data. 
+          Here you can see the basic "property graph" data model. 
+          Each data record is called a "node" representing an entity, intermediary, officer or address. 
+          They are connected to form a "graph" network that reveals a complex web of relationships. 
+          The model diagram shows how the nodes connect to each other.</p>
       </div>
 
       <div class="paragraph">
@@ -36,10 +41,11 @@
             <p><code>Entity</code> - The offshore legal entity. This could be a company, trust, foundation, or other legal entity created in a low-tax jurisdiction.</p>
           </li>
           <li>
-            <p><code>Officer</code> - A person or company who plays a role in an offshore entity, such as beneficiary, director, or shareholder. The relationships shown in the diagram are just a sample of all the existing ones.</p>
+            <p><code>Officer</code> - A person or company who plays a role in an offshore entity, such as beneficiary, director, or shareholder. 
+              The relationships shown in the diagram are just a sample of all the existing ones.</p>
           </li>
           <li>
-            <p><code>Intermediary</code> - A go-between for someone seeking an offshore corporation and an offshore service provider — usually a law-firm or a middleman that asks an offshore service provider to create an offshore firm.</p>
+            <p><code>Intermediary</code> - A go-between for someone seeking an offshore corporation and an offshore service provider — usually a law-firm, bank, or a middleman that asks an offshore service provider to create an offshore firm.</p>
           </li>
           <li>
             <p><code>Address</code> - The registered address as it appears in the original databases obtained by ICIJ.</p>
@@ -62,10 +68,10 @@
       <h4>Graph Patterns</h4>
       <div class="paragraph">
         <p>Neo4j’s query language, Cypher, is centered around <strong>graph patterns</strong> which represents entities with parentheses, for example, <br/>
-	    <code>(e:Entity)</code> and connections with arrows, for example <code>-[:INTERMEDIARY_OF]-&gt;</code>. <code>:Entity</code> and <code>:INTERMEDIARY_OF</code> are the types of the entity and the connection, respectively.</p>
+	    <code>(e:Entity)</code> and connections with arrows, for example <code>-[:intermediary_of]-&gt;</code>. <code>:Entity</code> and <code>:intermediary_of</code> are the types of the entity and the connection, respectively.</p>
       </div>
       <div class="paragraph">
-        <p>Here is an example pattern: <code>(:Intermediary)-[:INTERMEDIARY_OF]-&gt;(:Entity)</code>.
+        <p>Here is an example pattern: <code>(:Intermediary)-[:intermediary_of]-&gt;(:Entity)</code>.
         These patterns may be found with the <code>MATCH</code> clause.</p>
       </div>
 
@@ -103,9 +109,9 @@
     <h4>Jurisdiction distribution of Appleby Clients</h4>
     <div class="row">
         <div class="col-lg-6">
-          <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:INTERMEDIARY_OF]-&gt;(e:Entity)
+          <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:connected_to]-&gt;(e:Entity)
 WHERE intermediary.name CONTAINS 'Appleby'
-RETURN e.jurisdiction AS country, COUNT(*) AS frequency
+RETURN e.jurisdiction_description AS country, COUNT(*) AS frequency
 ORDER BY frequency DESC LIMIT 20;</code></pre>
         </div>
         <div class="col-lg-6">
@@ -132,7 +138,7 @@ ORDER BY frequency DESC LIMIT 20;</code></pre>
   <div class="row">
     <div class="col-md-12">
       <div class="visible-md visible-lg">
-        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel.png" alt="data model" width="50%" height="auto">
+        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel.png" alt="data model" width="50%" height="auto">
       </div>
       <div class="paragraph">
       <p>Nodes are the entities in the graph. These are the types of nodes that you will encounter in the Paradise and Panama Papers data:</p>
@@ -146,7 +152,7 @@ ORDER BY frequency DESC LIMIT 20;</code></pre>
       <p><code>Officer</code> - Either the beneficiary, director, or shareholder of the offshore legal entity.</p>
       </li>
       <li>
-      <p><code>Intermediary</code> - A go-between for someone seeking an offshore corporation and an offshore service provider&#8201;&#8212;&#8201;usually a law-firm or a middleman that asks an offshore service provider to create an offshore firm for a intermediary.</p>
+      <p><code>Intermediary</code> - A go-between for someone seeking an offshore corporation and an offshore service provider&#8201;&#8212;&#8201;usually a law-firm, bank, or a middleman that asks an offshore service provider to create an offshore firm for a intermediary.</p>
       </li>
       <li>
       <p><code>Address</code> - The registered address according to the information on file.</p>
@@ -172,7 +178,7 @@ ORDER BY frequency DESC LIMIT 20;</code></pre>
   <div class="row">
     <div class="col-sm-12">
       <div class="visible-md visible-lg">
-        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel.png" alt="data model" width="50%" height="auto">
+        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel.png" alt="data model" width="50%" height="auto">
       </div>
       <div class="paragraph">
       <p>Relationships connect the nodes in the graph.</p>
@@ -183,16 +189,16 @@ ORDER BY frequency DESC LIMIT 20;</code></pre>
       <div class="ulist">
       <ul>
       <li>
-      <p><code>(:Intermediary)-[:INTERMEDIARY_OF]-&gt;(:Entity)</code></p>
+      <p><code>(:Intermediary)-[:intermediary_of]-&gt;(:Entity)</code></p>
+      </li>
+      <!--li>
+      <p><code>(:Officer|Intermediary)-[:underlying]-&gt;(:Intermediary|Officer)</code></p>
+      </li-->
+      <li>
+      <p><code>(:Intermediary|Officer|Entity)-[:registered_address]-&gt;(:Address)</code></p>
       </li>
       <li>
-      <p><code>(:Officer|Intermediary)-[:UNDERLYING]-&gt;(:Intermediary|Officer)</code></p>
-      </li>
-      <li>
-      <p><code>(:Intermediary|Officer|Entity)-[:REGISTERED_ADDRESS]-&gt;(:Address)</code></p>
-      </li>
-      <li>
-      <p><code>(:Officer|Intermediary)-[:OFFICER_OF]-&gt;(:Entity)</code></p>
+      <p><code>(:Officer|Intermediary)-[:officer_of]-&gt;(:Entity)</code></p>
       </li>
       </ul>
       </div>
@@ -225,7 +231,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
     
     <div class="col-sm-12">
       <div class="visible-md visible-lg">
-        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel.png" alt="data model" width="50%" height="auto">
+        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel.png" alt="data model" width="50%" height="auto">
       </div>
       <div class="paragraph">
       <p>Each <code>Intermediary</code> node represents a go-between for someone seeking an offshore corporation and an offshore service provider&#8201;&#8212;&#8201;usually a law-firm or a middleman that asks an offshore service provider to create an offshore firm for a intermediary.</p>
@@ -246,7 +252,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
       <p><code>address</code> - The address of the intermediary.</p>
       </li>
       <li>
-		<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data&#8217;s source</p>
+		<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data's source</p>
       </li>
       <li>
       <p><code>status</code></p>
@@ -271,37 +277,37 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
          <div class="ulist">
       <ul>
       <li>
-      <p><code>(:Intermediary)-[:INTERMEDIARY_OF]-&gt;(:Entity)</code></p>
+      <p><code>(:Intermediary)-[:intermediary_of]-&gt;(:Entity)</code></p>
       </li>
       </ul>
       </div>
       <div class="listingblock">
       <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:INTERMEDIARY_OF]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:connected_to]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
       </div>
       </div>
       <div class="ulist">
       <ul>
       <li>
-      <p><code>(:Intermediary|Officer|Entity)-[:REGISTERED_ADDRESS]-&gt;(:Address)</code></p>
+      <p><code>(:Intermediary|Officer|Entity)-[:registered_address]-&gt;(:Address)</code></p>
       </li>
       </ul>
       </div>
       <div class="listingblock">
       <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:REGISTERED_ADDRESS]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:registered_address]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
       </div>
       </div>
       <div class="ulist">
       <ul>
       <li>
-      <p><code>(:Officer|Intermediary)-[:OFFICER_OF]-&gt;(:Entity)</code></p>
+      <p><code>(:Officer|Intermediary)-[:officer_of]-&gt;(:Entity)</code></p>
       </li>
       </ul>
       </div>
       <div class="listingblock">
       <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:OFFICER_OF]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:officer_of]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
       </div>
       </div>
   	</div>
@@ -320,7 +326,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
   <div class="row">
     <div class="col-sm-12">
       <div class="visible-md visible-lg">
-        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel_med.png" alt="data model" width="50%" height="auto">
+        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel_med.png" alt="data model" width="50%" height="auto">
       </div>
 <div class="paragraph">
 <p>Each <code>Entity</code> is a company, trust or fund created in a low-tax, offshore jurisdiction by an agent.</p>
@@ -338,10 +344,10 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
 <p><code>name</code> - The name of the legal entity.</p>
 </li>
 <li>
-	<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data&#8217;s source</p>
+	<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Pandora Papers</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data's source</p>
 </li>
 <li>
-<p><code>address</code> - This field includes the registered address connected to the entity only when the address is the same as the one of the intermediary. Otherwise, the registered address information is stored in the address node connected to this Entity node through a REGISTERED_ADDRESS relationship.</p>
+<p><code>address</code> - This field includes the registered address connected to the entity only when the address is the same as the one of the intermediary. Otherwise, the registered address information is stored in the address node connected to this Entity node through a registered_address relationship.</p>
 </li>
 <li>
 <p><code>former_name, original_name</code></p>
@@ -384,13 +390,13 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
    <div class="ulist">
 <ul>
 <li>
-<p><code>(:Intermediary)-[:INTERMEDIARY_OF]-&gt;(:Entity)</code> - The relationship showing the intermediary that oversaw the creation of the entity.</p>
+<p><code>(:Intermediary)-[:intermediary_of]-&gt;(:Entity)</code> - The relationship showing the intermediary that oversaw the creation of the entity.</p>
 </li>
 </ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:INTERMEDIARY_OF]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+<pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:intermediary_of]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
 </div>
 </div>
 
@@ -398,31 +404,31 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
 <div class="ulist">
   <ul>
     <li>
-      <p><code>(:Intermediary|Officer|Entity)-[:REGISTERED_ADDRESS]-&gt;(:Address)</code> - The registered address of the entity.</p>
+      <p><code>(:Intermediary|Officer|Entity)-[:registered_address]-&gt;(:Address)</code> - The registered address of the entity.</p>
     </li>
   </ul>
 </div>
 
 <div class="listingblock">
   <div class="content">
-    <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Entity)-[:REGISTERED_ADDRESS]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
+    <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Entity)-[:registered_address]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
   </div>
 </div>
 
-<div class="ulist">
+<!--div class="ulist">
   <ul>
     <li>
-      <p><code>(:Entity)-[:RELATED_ENTITY]->(:Entity)</code> - Entities that in the leaked documents were connected to each other.
+      <p><code>(:Entity)-[:related_entity]->(:Entity)</code> - Entities that in the leaked documents were connected to each other.
     </li>
   </ul>
 </div>
 
 <div class="listingblock">
   <div class="content">
-    <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Entity)-[:RELATED_ENTITY]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+    <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Entity)-[:related_entity]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
   </div>
 
-</div>
+</div-->
 	
 
   </div>
@@ -441,7 +447,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
   <div class="row">
     <div class="col-sm-12">
       <div class="visible-md visible-lg">
-        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel_med.png" alt="data model" width="50%" height="auto">
+        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel_med.png" alt="data model" width="50%" height="auto">
       </div>
 <div class="paragraph">
 <p>Each <code>Officer</code> node represents the beneficiary, director, or shareholder of the offshore legal entity, such as a beneficiary, shareholder, or director, etc.</p>
@@ -462,7 +468,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
 <p><code>valid_until</code></p>
 </li>
 <li>
-	<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data&#8217;s source</p>
+	<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Pandora Papers</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data's source</p>
 </li>
 <li>
 <p><code>country_codes, countries</code></p>
@@ -483,35 +489,35 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
   <div class="ulist">
     <ul>
       <li>
-        <p><code>(:Intermediary|Officer|Entity)-[:REGISTERED_ADDRESS]-&gt;(:Address)</code></p>
+        <p><code>(:Intermediary|Officer|Entity)-[:registered_address]-&gt;(:Address)</code></p>
       </li>
     </ul>
   </div>
   <div class="listingblock">
     <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Officer)-[:REGISTERED_ADDRESS]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Officer)-[:registered_address]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
     </div>
   </div>
 
   <div class="ulist">
     <ul>
       <li>
-        <p><code>(:Officer)-[:OFFICER_OF]-&gt;(:Entity)</code></p>
+        <p><code>(:Officer)-[:officer_of]-&gt;(:Entity)</code></p>
       </li>
     </ul>
   </div>
 
   <div class="listingblock">
     <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Officer)-[:OFFICER_OF]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Officer)-[:officer_of]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
     </div>
   </div>
 
 
-  <div class="ulist">
+  <!--div class="ulist">
     <ul>
       <li>
-        <p><code>(:Officer|Intermediary)-[:UNDERLYING]-&gt;(:Intermediary|Officer)</code> These are relationships such as <code>NOMINEE_DIRECTOR_OF</code>, representing people that are acting as nominees of others. This applies to all relationship types beginning with <code>NOMINEE_</code> </p>
+        <p><code>(:Officer|Intermediary)-[:underlying]-&gt;(:Intermediary|Officer)</code> These are relationships such as <code>NOMINEE_DIRECTOR_OF</code>, representing people that are acting as nominees of others. This applies to all relationship types beginning with <code>NOMINEE_</code> </p>
       </li>
     </ul>
   </div>
@@ -520,7 +526,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
     <div class="content">
       <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(o:Officer)-[:NOMINEE_DIRECTOR_OF]-&gt;(:Intermediary) RETURN p LIMIT 25;</code></pre>
     </div>
-  </div>
+  </div-->
 
   
 	
@@ -542,7 +548,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
   <div class="row">
     <div class="col-sm-12">
       <div class="visible-md visible-lg">
-        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel_med.png" alt="data model" width="50%" height="auto">
+        <img style="margin-left:1em;" class="img-responsive img-thumbnail pull-right" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel_med.png" alt="data model" width="50%" height="auto">
       </div>
 <div class="paragraph">
 <p>The <code>Address</code> node represents the address as found on file for the <code>Intermediary</code>, <code>Officer</code>, or <code>Entity</code>.</p>
@@ -560,7 +566,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
 <p><code>address</code> - the address as it appears in the records</p>
 </li>
 <li>
-	<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data&#8217;s source</p>
+	<p><code>sourceID</code> - <code>Offshore Leaks</code> <code>Pandora Papers</code> <code>Panama Papers</code> or <code>Paradise Papers</code> depending on the data's source</p>
 </li>
 <li>
 <p><code>valid_until</code></p>
@@ -582,13 +588,13 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
    <div class="ulist">
 <ul>
 <li>
-<p><code>(:Intermediary|Officer|Entity)-[:REGISTERED_ADDRESS]-&gt;(:Address)</code></p>
+<p><code>(:Intermediary|Officer|Entity)-[:registered_address]-&gt;(:Address)</code></p>
 </li>
 </ul>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=()-[:REGISTERED_ADDRESS]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
+<pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=()-[:registered_address]-&gt;(:Address) RETURN p LIMIT 25;</code></pre>
 </div>
 </div>
 	</div>
@@ -627,7 +633,6 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
             </ul>
           </div>
         </div>
-        <div class="box-max"><img class="img-responsive img-thumbnail" src="https://panamapapers.icij.org/assets/logo_icij_complete.png" width="300">
       </div>
       
     <br/>
@@ -647,7 +652,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
             </ul>
             <div class="clearfix"></div>
           </div>
-          <a play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html"><button click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Run Queries</button></a>
+          <a play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/examples.html"><button click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/examples.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Run Queries</button></a>
         </div>
         <div class="teaser teaser-3">
           <h3>Shape of the Data</h3>
@@ -661,7 +666,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
             </ul>
             <div class="clearfix"></div>
           </div>
-          <a play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/datashape.html"><button click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/datashape.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Start Learning</button></a>
+          <a play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/datashape.html"><button click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/datashape.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Start Learning</button></a>
         </div>
         <div class="teaser teaser-3">
           <h3>Send ICIJ a tip</h3>
@@ -686,13 +691,19 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
 
   <footer class="panama">
     <ul class="list-inline">
-      <li><a click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/'" class="sl sl-house">
+      <li><a click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/index.html'" class="sl sl-house">
 
           Introduction</a></li>
-      <li><a click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html'" class="sl sl-show">
+      <li><a click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/pandora-papers-examples.html'" class="sl sl-show">
 
-          Investigative queries</a></li>
-      <li><a click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/datashape.html'" class="sl sl-network-trio">
+          Pandora Papers Investigative queries</a></li>
+      <li><a click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/paradise-papers-examples.html'" class="sl sl-show">
+
+            Paradise Papers Investigative queries</a></li>
+            <li><a click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/panama-papers-examples.html'" class="sl sl-show">
+
+              Panama Papers Investigative queries</a></li>
+              <li><a click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/datashape.html'" class="sl sl-network-trio">
 
           Shape of the data</a></li>
     </ul>

@@ -1,0 +1,85 @@
+type Entity {
+  address: String
+  closed_date: String
+  company_type: String
+  countries: String
+  country_codes: String
+  ibcRUC: String
+  incorporation_date: String
+  jurisdiction: String!
+  jurisdiction_description: String!
+  name: String!
+  node_id: String!
+  note: String
+  service_provider: String
+  sourceID: String!
+  status: String
+  type: String
+  valid_until: String!
+  registered_address: [Address]
+    @relationship(type: "registered_address", direction: OUT)
+  officers: [Officer] @relationship(type: "officer_of", direction: IN)
+  others: [Other] @relationship(type: "intermediary_of", direction: IN)
+}
+
+type Other {
+  countries: String
+  country_codes: String
+  jurisdiction: String
+  jurisdiction_description: String
+  name: String!
+  node_id: String!
+  note: String
+  sourceID: String!
+  status: String
+  valid_until: String!
+  intermediary_of: [Entity]
+    @relationship(type: "intermediary_of", direction: OUT)
+  same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
+}
+
+type Intermediary {
+  countries: String
+  country_codes: String
+  name: String!
+  node_id: String!
+  sourceID: String!
+  valid_until: String!
+  connected_to: [Entity] @relationship(type: "connected_to", direction: OUT)
+  same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
+}
+
+type Officer {
+  countries: String
+  country_codes: String
+  name: String!
+  node_id: String!
+  note: String
+  sourceID: String!
+  valid_until: String!
+  registered_address: [Address]
+    @relationship(type: "registered_address", direction: OUT)
+  officer_of: [Entity] @relationship(type: "officer_of", direction: OUT)
+  connected_to: [Entity] @relationship(type: "connected_to", direction: OUT)
+  same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
+  same_id_as: [Officer] @relationship(type: "SAME_ID_AS", direction: OUT)
+  num_of_connected_entities: Int
+    @cypher(
+      statement: """
+      MATCH (this)--(e:Entity)
+      RETURN COUNT(e)
+      """
+    )
+}
+
+type Address {
+  address: String!
+  countries: String
+  country_codes: String
+  name: String!
+  node_id: String!
+  sourceID: String!
+  valid_until: String!
+  officers: [Officer] @relationship(type: "registered_address", direction: IN)
+  entities: [Entity] @relationship(type: "registered_address", direction: IN)
+}

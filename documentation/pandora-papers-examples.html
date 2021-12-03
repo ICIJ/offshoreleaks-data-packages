@@ -1,8 +1,191 @@
 <style type="text/css" media="screen">
-    @import url("https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/styles/panama_guide.css");
+    @import url("https://guides.neo4j.com/sandbox/icij-offshoreleaks/offshoreleaks_guide.css");
 </style>
 <article class="guide" ng-controller="AdLibDataController">
     <carousel class="deck container-fluid panama-deck">
+
+        <slide class="row-fluid">
+            <div class="row">
+              <div class="col-sm-12">
+                <img class="img-responsive img-thumbnail" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/pandora-header.png">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <h3 style="text-align:center; margin-bottom: 1em;">Pandora Papers - The Data Connecting Politicians, Criminals and a Rogue Industry that hides their cash</h3>
+              </div>
+            </div>
+          
+            <div class="row">
+          
+              <div class="col-md-6 col-sm-12">
+                <h4>Pandora Papers: Secrets of the Global Elite</h4>
+                <div class="embed-responsive embed-responsive-16by9">
+                  <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/dHAtIFyDB8k?rel=0" frameborder="0" allowfullscreen width="560" height="315"></iframe>
+                </div>
+              </div>
+          
+              <div class="col-md-6 col-sm-12">
+                <h4>About this data</h4>
+                <div class="panama-quote">
+                  <p>The <a target="_blank" href="https://offshoreleaks.icij.org/">ICIJ Offshore Leaks database</a>, which you are working with in Neo4j, contains information on almost 785,000 offshore entities that are part of the Pandora, Paradise and Panama Papers and the Offshore Leaks investigations. The data covers a long time of activities – and links to people and companies in more than 200 countries and territories.</p>
+                  <p>The real value of the database is that it <strong>strips away the secrecy</strong> that cloaks companies and trusts incorporated in tax havens and exposes the people behind them. This includes, when available, the names of the real owners of those opaque structures. In all, it reveals more than 430,000 names of people and companies behind secret offshore structures. They come from leaked records and not a standardized corporate registry, so there may be duplicates. We suggest you confirm the identities of any individuals or entities located in the database based on addresses or other identifiable information.</p>
+                  <p><strong>There are legitimate uses for offshore companies and trusts. We do not intend to suggest or imply that any persons, companies or other entities included in the database have broken the law or otherwise acted improperly. If you find an error in the database please get in touch with ICIJ.</strong></p>
+                </div>
+              </div>
+            </div>
+          
+          </slide>
+          
+          <slide class="row-fluid">
+          
+            <div class="row">
+              <div class="col-sm-12">
+                <h3>The Shape of the Data</h3>
+              </div>
+            </div>
+          
+            <div class="row">
+              <div class="col-md-6">
+                <img class="img-responsive img-thumbnail" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel.png" alt="data model">
+              </div>
+              <div class="col-md-6 col-sm-6">
+                <div class="paragraph">
+                  <p>The Offshore Leaks Database was imported into Neo4j to be used by journalists and researchers to take advantage of the connections in the data. To the left is the basic "property graph" data model. Each data record is called a "node" representing an entity, intermediary, officer or address. They're connected to form a "graph" that reveals a complex web of relationships. To the left you can see a simplified diagram how the nodes connect to each other.</p>
+                </div>
+          
+                <div class="paragraph">
+                  <p>These are the types of nodes that you will encounter in the data:</p>
+                </div>
+                <div class="ulist">
+                  <ul>
+                    <li>
+                      <p><code>Entity</code> - The offshore legal entity. This could be a company, trust, foundation, or other legal entity created in a low-tax jurisdiction.</p>
+                    </li>
+                    <li>
+                      <p><code>Officer</code> - A person or company who plays a role in an offshore entity, such as beneficiary, director, or shareholder. The relationships shown in the diagram are just a sample of all the existing ones.</p>
+                    </li>
+                    <li>
+                      <p><code>Intermediary</code> - A go-between for someone seeking an offshore corporation and an offshore service provider — usually a law-firm or a middleman that asks an offshore service provider to create an offshore firm.</p>
+                    </li>
+                    <li>
+                      <p><code>Address</code> - The registered address as it appears in the original databases obtained by ICIJ.</p>
+                    </li>
+                    <li>
+                      <p><code>Other</code> - Other entities found in the data.</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </slide>
+
+          <slide class="row-fluid">
+            <div class="col-sm-12">
+              <h3>How Graphs Helped our Investigation</h3>
+              <div class="row-fluid">
+                <div class="col-sm-12">
+                  <div class="paragraph">
+                    <p>The Offshore Leaks data exposes a set of connections between people and offshore entities.  Graph databases are the best way to explore the relationships between these people and entities&#8201;&#8212;&#8201;it&#8217;s much more intuitive to use for this purpose than a SQL database or other types of NoSQL databases.</p>
+                </div>
+              </div>
+            </div>
+              <div class="row-fluid">
+                <div class="col-sm-5">
+                  <div class="paragraph">
+                    <p>For example, let's say we want to discover the shortest paths between two entity officers through a set of <code>Entity</code> or <code>Address</code> nodes.  This is quite easy with Cypher, Neo4j's graph query language.</p>
+                  </div>
+                  <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (a:Officer),(b:Officer)
+          WHERE a.name CONTAINS 'Ross, Jr' 
+            AND b.name CONTAINS 'Grant'
+          MATCH p=allShortestPaths((a)-[:officer_of|intermediary_of|registered_address*..10]-(b))
+          RETURN p
+          LIMIT 50</code></pre>
+          
+                  <div class="paragraph">
+                    <p>To execute this query, please <strong>click</strong> on the statement above to put the query in the query editor above. <br/>Hit the triangular <span class="icon"><i class="fa fa-play-circle"></i></span> button or press <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span> to <strong>run it</strong> and see the resulting visualization.</p>
+                  </div>
+                </div>
+                <div class="col-sm-7">
+                  <p>The resulting graph allows us to explore how these people are connected:</p>
+                  <img class="img-responsive img-thumbnail" src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/shortestPaths.png">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          </slide>
+          
+          <slide class="row-fluid">
+          
+            <div class="row">
+              <div class="col-sm-12">
+                <h3>How to ask questions using a query language</h3>
+          
+          
+          
+                <h4>Graph Patterns</h4>
+                <div class="paragraph">
+                  <p>Neo4j’s query language, Cypher, is centered around <strong>graph patterns</strong> which represents entities with parentheses, for example, 
+                <code>(e:Entity)</code> and connections with arrows, for example <code>-[:connected_to]-&gt;</code>.
+                  <code>:Entity</code> and <code>:connected_to</code> are the types of the entity and the connection, respectively.
+                </div>
+                <div class="paragraph">
+                  <p>Here is an example pattern: <code>(:Intermediary)-[:connected_to]-&gt;(:Entity)</code>.
+                  These patterns may be found with the <code>MATCH</code> clause.</p>
+                </div>
+          
+          
+          
+                <h4>Other Clauses</h4>
+                <div class="paragraph">
+                  <p>The following clauses may follow a <code>MATCH</code> clause.
+                    They work with the properties stored at the nodes and relationships found in the graph matching that pattern.</p>
+                </div>
+                <table class="tableblock frame-all grid-all spread">
+                <colgroup>
+                <col style="width: 15%;">
+                <col style="width: 85%;">
+                </colgroup>
+                <tbody>
+                <tr>
+                <td class="tableblock halign-left valign-top"><p class="tableblock">filter</p></td>
+                <td class="tableblock halign-left valign-top"><p class="tableblock"><code>WHERE intermediary.name CONTAINS 'MOSSACK'</code></p></td>
+                </tr>
+                <tr>
+                <td class="tableblock halign-left valign-top"><p class="tableblock">aggregate</p></td>
+                <td class="tableblock halign-left valign-top"><p class="tableblock"><code>WITH e.jurisdiction AS country, COUNT(*) AS frequency</code></p></td>
+                </tr>
+                <tr>
+                <td class="tableblock halign-left valign-top"><p class="tableblock">return</p></td>
+                <td class="tableblock halign-left valign-top"><p class="tableblock"><code>RETURN country, frequency</code></p></td>
+                </tr>
+                <tr>
+                <td class="tableblock halign-left valign-top"><p class="tableblock">order</p></td>
+                <td class="tableblock halign-left valign-top"><p class="tableblock"><code>ORDER BY frequency DESC</code></p></td>
+                </tr>
+                <tr>
+                <td class="tableblock halign-left valign-top"><p class="tableblock">limit</p></td>
+                <td class="tableblock halign-left valign-top"><p class="tableblock"><code>LIMIT 20;</code></p></td>
+                </tr>
+                </tbody>
+                </table>
+                <div class="listingblock">
+                <div class="title">Jurisdiction distribution of intermediaries in the ICIJ offshore leaks DB</div>
+                <div class="content">
+                <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:connected_to]-&gt;(e:Entity)
+          WHERE intermediary.name CONTAINS 'Cordero'
+          RETURN e.jurisdiction AS country, COUNT(*) AS frequency
+          ORDER BY frequency DESC LIMIT 20;</code></pre>
+                </div>
+                </div>
+                <div class="paragraph">
+                <p>Click on the block to put the query in the topmost window on the query editor. Hit the triangular <span class="icon"><i class="fa fa-play-circle"></i></span> button or press <span class="keyseq"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span> to run it and see the resulting visualization.</p>
+                </div>
+              </div>
+            </div>
+          
+          </slide>
 
         <slide class="row-fluid">
             <div class="row">
@@ -14,7 +197,7 @@
             <div class="row">
                 <div class="col-md-6 visible-sm visible-xs">
                     <img class="img-responsive img-thumbnail"
-                         src="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/img/datamodel_med.png"
+                         src="https://guides.neo4j.com/sandbox/icij-offshoreleaks/img/datamodel_med.png"
                          alt="investigating">
                 </div>
                 <div class="col-lg-6">
@@ -48,7 +231,7 @@
             <div class="row">
                 <div class="col-lg-6">
                     <div class="paragraph">
-                        <p>This interactive guide will help you explore the Paradise and Panama Papers and the Offshore
+                        <p>This interactive guide will help you explore the Pandora, Paradise and Panama Papers and the Offshore
                             Leaks data using Cypher, Neo4j&#8217;s graph query language.</p>
                     </div>
                     <div class="paragraph">
@@ -57,7 +240,7 @@
                     </div>
                     <div class="paragraph">
                         <p>Be sure to check out the <a
-                                play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/datashape.html">shape
+                                play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/datashape.html">shape
                             of the data section</a> to understand the basics of Cypher and the data model used in the
                             graph database.</p>
                     </div>
@@ -85,7 +268,7 @@
                                 <div class="col-lg-6">
                                     <pre mode="cypher"
                                          class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                            class="cypher language-cypher">CALL apoc.meta.graphSample()</code></pre>
+                                            class="cypher language-cypher">CALL db.schema.visualization()</code></pre>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="paragraph">
@@ -127,13 +310,13 @@ ORDER BY count DESC LIMIT 20</code></pre>
 
                     <h4>Filter datasource</h4>
                     <div class="paragraph">
-                        <p>Note that the above query is searching the Offshore leaks, Paradise- and Panama Papers
+                        <p>Note that the above query is searching the Offshore leaks, Pandora-, Paradise- and Panama Papers
                             datasets. To filter for just one source, use a <code>WHERE</code> clause. For example:
                     </div>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary) WHERE i.sourceID = "Paradise Papers - Appleby" AND size( (i)--() ) &gt; 100
+            class="cypher language-cypher">MATCH (i:Intermediary) WHERE i.sourceID CONTAINS "Pandora Papers" AND size( (i)--() ) &gt; 100
 MATCH (i)-[connection]-(entity)
 RETURN i.name as intermediary, type(connection) as relationship, head(labels(entity)) as type, count(*) as count
 ORDER BY count DESC LIMIT 20</code></pre>
@@ -150,11 +333,11 @@ ORDER BY count DESC LIMIT 20</code></pre>
                     <div class="paragraph">
                         <p>Querying the graph with Cypher is all about graph pattern matching. To query the graph we
                             define graph patterns to be searched. For example, we can define the pattern "Intermediary
-                            connected to an <code>Entity</code> node through the <code>INTERMEDIARY_OF</code> relationship" as:</p>
+                            connected to an <code>Entity</code> node through the <code>intermediary_of</code> relationship" as:</p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
-                            <pre><code>(i:Intermediary)-[r:INTERMEDIARY_OF]-&gt;(e:Entity)</code></pre>
+                            <pre><code>(i:Intermediary)-[r:intermediary_of]-&gt;(e:Entity)</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -171,8 +354,8 @@ ORDER BY count DESC LIMIT 20</code></pre>
                     <div class="row">
                         <div class="col-lg-6">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary)-[r:CONNECTED_TO]-&gt;(e:Entity)
-WHERE i.name CONTAINS "Appleby"
+            class="cypher language-cypher">MATCH (i:Intermediary)-[r:connected_to]-&gt;(e:Entity)
+WHERE i.name CONTAINS "Cordero"
 RETURN i, r, e LIMIT 100</code></pre>
                         </div>
                         <div class="col-lg-6">
@@ -191,11 +374,11 @@ RETURN i, r, e LIMIT 100</code></pre>
                 <br/>
                 <div>
                     <div class="paragraph">
-                        <p>Let's query for the pattern "Officer node connected to an <code>Entity</code> node through <code>CONNECTED_TO</code> relationship:</p>
+                        <p>Let's query for the pattern "Officer node connected to an <code>Entity</code> node through <code>connected_to</code> relationship:</p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
-                            <pre><code>(o:Officer)-[:CONNECTED_TO]-&gt;(:Entity)</code></pre>
+                            <pre><code>(o:Officer)-[:connected_to]-&gt;(:Entity)</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -206,7 +389,7 @@ RETURN i, r, e LIMIT 100</code></pre>
                         <h4>Officers with most entities</h4>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer)-[:BENEFICIARY_OF]-&gt;(:Entity)
+        class="cypher language-cypher">MATCH (o:Officer)-[:connected_to]-&gt;(:Entity)
 RETURN o.name, count(*) as entities
 ORDER BY entities DESC LIMIT 10</code></pre>
                         </div>
@@ -230,14 +413,14 @@ ORDER BY entities DESC LIMIT 10</code></pre>
                         <div class="node">
                             <div class="form-group">
                                 <label>Name of officer:</label> <input value-for="officer" class="form-control"
-                                                                       value="A Name">
+                                                                       value="Smith">
                             </div>
                         </div>
                     </form>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">:param officer:"<span value-key="officer">A Name</span>"</code></pre>
+        class="cypher language-cypher">:param officer=>"<span value-key="officer">Smith</span>"</code></pre>
                         </div>
                     </div>
                     <div class="listingblock">
@@ -271,7 +454,7 @@ LIMIT 100</code></pre>
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer)
 WHERE o.name CONTAINS $officer
-MATCH path = (o)-[r]->(:Entity)
+MATCH path = (o)-[r]-&gt;(:Entity)
 RETURN path LIMIT 100</code></pre>
                     </div>
                 </div>
@@ -281,7 +464,7 @@ RETURN path LIMIT 100</code></pre>
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer) WHERE o.name CONTAINS $officer
 MATCH path = (o)-[]->(:Entity)
-      <-[]-(:Officer)-[]->(:Entity)
+      &lt;-[]-(:Officer)-[]-&gt;(:Entity)
 RETURN path LIMIT 100</code></pre>
                     </div>
                 </div>
@@ -299,14 +482,14 @@ RETURN path LIMIT 100</code></pre>
                     <form>
                         <div class="node">
                             <div class="form-group">
-                                <label>Name of entity:</label> <input value-for="entity" class="form-control" value="An Entity">
+                                <label>Name of entity:</label> <input value-for="entity" class="form-control" value="Cordero">
                             </div>
                         </div>
                     </form>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding">
-<code class="cypher language-cypher">:param entity:"<span value-key="entity">An Entity</span>"</code></pre>
+<code class="cypher language-cypher">:param entity=>"<span value-key="entity">Cordero</span>"</code></pre>
                         </div>
                     </div>
                     <div class="listingblock">
@@ -323,7 +506,7 @@ LIMIT 100</code></pre>
         </slide>
 
 
-        <slide class="row-fluid">
+        <!--slide class="row-fluid">
             <div class="col-sm-12">
                 <h3>Joint involvement</h3>
                 <br/>
@@ -412,7 +595,7 @@ RETURN o1,o2,apoc.create.vRelationship(o1,'JOINT',{freq:freq,entities:[e IN enti
         class="cypher language-cypher">MATCH (a:Officer),(b:Officer)
 WHERE a.name CONTAINS '<span value-key="officerOne">Smith</span>' AND b.name CONTAINS '<span value-key="officerTwo">Grant</span>'
 WITH a,b LIMIT 20000
-MATCH p=allShortestPaths((a)-[:OFFICER_OF|:INTERMEDIARY_OF|:REGISTERED_ADDRESS*..10]-(b))
+MATCH p=allShortestPaths((a)-[:officer_of|intermediary_of|registered_address*..10]-(b))
 RETURN p
 LIMIT 50</code></pre>
                         </div>
@@ -421,9 +604,6 @@ LIMIT 50</code></pre>
             </div>
         </slide>
 
-        <!-- LOCATION QUERIES -->
-
-        <!-- ADDRESS QUERY -->
         <slide class="row-fluid">
             <div class="col-sm-12">
                 <h3>Query by address</h3>
@@ -445,8 +625,8 @@ LIMIT 50</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (a:Address)<-[:REGISTERED_ADDRESS]-(other)
-WHERE a.address CONTAINS '<span value-key="city">Barcelona</span>' AND a.address CONTAINS '<span
+        class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(other)
+WHERE a.address CONTAINS '<span value-key="city">Barcelona</span>' AND a.countries CONTAINS '<span
             value-key="state">Spain</span>'
 RETURN a, other
 LIMIT 100</code></pre>
@@ -456,7 +636,6 @@ LIMIT 100</code></pre>
             </div>
         </slide>
 
-        <!-- OFFSHORE ENTITY JURISDICTIONS BY INTERMEDIARY QUERY -->
         <slide class="row-fluid">
             <div class="col-sm-12">
                 <h3>Offshore entity juridictions by intermediary</h3>
@@ -476,7 +655,7 @@ LIMIT 100</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (i:Intermediary)-[:INTERMEDIARY_OF]->(e:Entity)
+        class="cypher language-cypher">MATCH (i:Intermediary)-[:connected_to]->(e:Entity)
 WHERE i.name CONTAINS '<span value-key="intermediary">Appleby</span>'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number
 ORDER BY number DESC LIMIT 10</code></pre>
@@ -487,7 +666,6 @@ ORDER BY number DESC LIMIT 10</code></pre>
         </slide>
 
 
-        <!-- MOST POPULAR OFFSHORE JURISDICTIONS FOR PEOPLE CONNECTED TO THE US -->
         <slide class="row-fluid">
             <div class="col-sm-12">
                 <h3>Most popular offshore jurisdiction for people connected to a country</h3>
@@ -508,8 +686,8 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer)-->(e:Entity)<-[:INTERMEDIARY_OF]-(i:Intermediary)
-WHERE o.country_codes CONTAINS '<span value-key="countryCode">USA</span>' and i.sourceID = 'Paradise Papers'
+        class="cypher language-cypher">MATCH (o:Officer)--&gt;(e:Entity)&lt;-[:connected_to]-(i:Intermediary)
+WHERE o.country_codes CONTAINS '<span value-key="countryCode">USA</span>'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number
 ORDER BY number DESC LIMIT 10</code></pre>
                         </div>
@@ -519,7 +697,6 @@ ORDER BY number DESC LIMIT 10</code></pre>
         </slide>
 
 
-        <!-- MOST POPULAR OFFSHORE JURISDICTIONS FOR PEOPLE WITH ADDRESSES IN ____ CITY -->
         <slide class="row-fluid">
             <div class="col-sm-12">
                 <h3>Most popular offshore jurisdictions for people with addresses in a certain city</h3>
@@ -539,9 +716,9 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (a:Address)<-[:REGISTERED_ADDRESS]-(o:Officer),
-(o)-->(e:Entity)<-[:INTERMEDIARY_OF]-(i:Intermediary)
-WHERE a.address CONTAINS '<span valeue-key="city">London</span>' AND a.address CONTAINS '<span value-key="state">United Kingdom</span>'
+        class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(o:Officer),
+(o)--&gt;(e:Entity)&lt;-[:connected_to]-(i:Intermediary)
+WHERE a.address CONTAINS '<span valeue-key="city">London</span>' AND a.countries CONTAINS '<span value-key="state">United Kingdom</span>'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number 
 ORDER BY number DESC LIMIT 10</code></pre>
                         </div>
@@ -571,8 +748,8 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
           <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                  class="cypher language-cypher">MATCH (a:Address)<-[:REGISTERED_ADDRESS]-(o:Officer),
-(o)-->(e:Entity)<-[:INTERMEDIARY_OF]-(i:Intermediary)
+                  class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(o:Officer),
+(o)--&gt;(e:Entity)&lt;-[:connected_to]-(i:Intermediary)
 WHERE a.address CONTAINS '<span value-key="state">Isle of Man</span>'
 RETURN i.name AS intermediary, count(DISTINCT e) AS number 
 ORDER BY number DESC LIMIT 10</code></pre>
@@ -581,9 +758,6 @@ ORDER BY number DESC LIMIT 10</code></pre>
                 </div>
             </div>
         </slide>
-
-
-        <!-- END LOCATION QUERIES -->
 
 
         <slide class="row-fluid">
@@ -619,11 +793,18 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">CALL apoc.index.addAllNodes('offshore',{
-  Officer: ["name","countries"],
-  Intermediary:  ["name","address","countries"],
-  Address: ["address","countries"],
-  Entity: ["name", "address", "service_provider", "former_name", "company_type","countries"]})</code></pre>
+        class="cypher language-cypher">call db.index.fulltext.createNodeIndex('offshore',
+        ['Officer','Intermediary','Address','Entity'],
+        ['name','countries','address','service_provider','former_name','company_type'])</code></pre>
+                        </div>
+                    </div>
+                    <div class="paragraph">
+                        <p>The index needs to be populated first, which takes between 30 and 60 seconds. You can run the following command to check the current status. And re-run it with the little circular re-run icon in the frame.</p>
+                    </div>
+                    <div class="listingblock">
+                        <div class="content">
+<pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
+        class="cypher language-cypher">call db.indexDetails('offshore')</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -637,7 +818,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     </div>
 
                     <div class="paragraph">
-                        <p>If you enter a word into the form, all occurrences will be found (but limited to 100
+                        <p>If you enter a word into the form, all occurrences will be found (but limited to 10
                             results).</p>
                     </div>
 
@@ -651,9 +832,9 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
                             <pre mode="cypher"
-                                 class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                    class="cypher language-cypher">CALL apoc.index.search("offshore", '<span
-                                    value-key="search">Nike</span>')</code></pre>
+                            class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
+                               class="cypher language-cypher">CALL db.index.fulltext.queryNodes('offshore','<span
+                               value-key="search">Nike</span>',{limit:10})</code></pre>
                         </div>
                     </div>
                 </div>
@@ -668,22 +849,19 @@ ORDER BY number DESC LIMIT 10</code></pre>
                 <div>
                     <div class="paragraph">
                         <p>You can futher restrict the full text search to only searching in a particular property. In
-                            order to seach for an <code>Entity</code> incorporated by offshore service provider <em>Mossack
-                                Fonseca</em>, use the following: </p>
+                            order to seach for an <code>Entity</code> incorporated by offshore service provider <em>Appleby</em>, use the following: </p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
                             <pre mode="cypher"
                                  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                    class="cypher language-cypher">CALL apoc.index.search("offshore", "Entity.service_provider:Mossack Fonseca")</code></pre>
+                                    class="cypher language-cypher">CALL db.index.fulltext.queryNodes('offshore', 'service_provider:"Appleby"',{limit:10})</code></pre>
                         </div>
                     </div>
                     <h4>Test it yourself:</h4>
                     <form>
                         <div class="node">
                             <div class="form-group">
-                                <label>Label/Type to search for:</label> <input value-for="label" value="Entity"
-                                                                                class="form-control">
                                 <label>Attribute to search for:</label> <input value-for="property"
                                                                                value="service_provider"
                                                                                class="form-control">
@@ -696,9 +874,8 @@ ORDER BY number DESC LIMIT 10</code></pre>
                         <div class="content">
                             <pre mode="cypher"
                                  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                    class="cypher language-cypher">CALL apoc.index.search("offshore", "<span
-                                    value-key="label">Entity</span>.<span
-                                    value-key="property">service_provider</span>:<span value-key="search">Appleby</span>")</code></pre>
+                                    class="cypher language-cypher">CALL db.index.fulltext.queryNodes('offshore', '<span
+                                    value-key="property">service_provider</span>:"<span value-key="search">Appleby</span>"', {limit:10})</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -725,10 +902,10 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">CALL apoc.index.search("offshore", 'Address.address:"New York"')
-YIELD node AS addr
-MATCH (addr)&lt;-[:REGISTERED_ADDRESS]-(entity)
-RETURN addr, entity LIMIT 50</code></pre>
+            class="cypher language-cypher">CALL db.index.fulltext.queryNodes("offshore", 'address:"New York"')
+            YIELD node AS addr
+            MATCH (addr:Address)&lt;-[:registered_address]-(entity)
+            RETURN addr, entity LIMIT 50</code></pre>
                         </div>
                     </div>
 
@@ -743,10 +920,10 @@ RETURN addr, entity LIMIT 50</code></pre>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">CALL apoc.index.search("offshore", "Address.address:Malta~")
-YIELD node AS addr
-MATCH (addr)&lt;-[:REGISTERED_ADDRESS]-(entity)
-RETURN addr, entity LIMIT 50</code></pre>
+            class="cypher language-cypher">CALL db.index.fulltext.queryNodes("offshore", 'address:Malta~')
+            YIELD node AS addr
+            MATCH (addr:Address)&lt;-[:registered_address]-(entity)
+            RETURN addr, entity LIMIT 50</code></pre>
                         </div>
                     </div>
 
@@ -755,17 +932,17 @@ RETURN addr, entity LIMIT 50</code></pre>
                         <p>You might notice that there are addresses that contain the word “Barcelona” that are not in
                             Barcelona, Spain.</p>
 
-                        <p>We can further specify that we want the text to contain both the word Barcelona, and the word
-                            Spain:</p>
+                        <p>We can further specify that we want the text to contain both the word Barcelona, AND the word
+                            Spain with:</p>
                     </div>
 
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">CALL apoc.index.search("offshore", "+Address.address:Barcelona~ +Spain~")
-YIELD node AS addr
-MATCH (addr)&lt;-[:REGISTERED_ADDRESS]-(entity)
-RETURN addr, entity LIMIT 50</code></pre>
+            class="cypher language-cypher">CALL db.index.fulltext.queryNodes("offshore", '+name:Barcelona +name:Spain')
+            YIELD node AS addr
+            MATCH (addr:Address)&lt;-[:registered_address]-(entity)
+            RETURN addr, entity LIMIT 50</code></pre>
                         </div>
                     </div>
 
@@ -793,16 +970,17 @@ RETURN addr, entity LIMIT 50</code></pre>
                     </div>
                     <div class="paragraph">
                         <p>The algorithm can also be used as way of measuring the importance of entities in a network.
-                            Let’s use PageRank to find the top 20 ranked entities in the dataset.</p>
+                            Let’s use PageRank to find the top 20 ranked entities in the dataset (this runs for about 20s).</p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">CALL algo.pageRank.stream() YIELD node, score
-WHERE node:Entity
-RETURN node.name AS entity, score
-ORDER BY score DESC
-LIMIT 20</code></pre>
+        class="cypher language-cypher">CALL gds.pageRank.stream({nodeProjection:'*',relationshipProjection:'*'}) YIELD nodeId, score
+        WITH gds.util.asNode(nodeId) as node, score
+        WHERE node:Entity
+        RETURN node.name AS entity, score
+        ORDER BY score DESC
+        LIMIT 20</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -815,10 +993,11 @@ LIMIT 20</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">CALL algo.pageRank.stream() YIELD node as address, score
-WHERE address:Address
+        class="cypher language-cypher">CALL gds.pageRank.stream({nodeProjection:'*',relationshipProjection:'*'}) YIELD nodeId, score
+        WITH gds.util.asNode(nodeId) as node, score
+        WHERE node:Address
 WITH * ORDER BY score DESC  LIMIT 10
-MATCH (address)&lt;-[:REGISTERED_ADDRESS]-(e:Entity)
+MATCH (address)&lt;-[:registered_address]-(e:Entity)
 RETURN address.address, count(e) AS count
 ORDER BY count DESC</code></pre>
                         </div>
@@ -827,62 +1006,28 @@ ORDER BY count DESC</code></pre>
             </div>
         </slide>
 
-
+    -->
+    
 <slide class="row-fluid">
   <div class="col-sm-12">
-    <h3>Explore the Panama and Paradise Papers Yourself</h3>
-    <br/>
-    
-    
-    
-    
+    <h3>Explore the Pandora, Panama, and Paradise Papers Yourself</h3>
+      
+    </div>
     <div class="row">
-      <div class="col-lg-4">
-        <div>
-          <h3 style="padding:10px;">Further Resources</h3>
-          <div class="ulist">
-            <ul>
-              <li>
-                <p><a target="_blank" href="https://icij.org/paradisepapers/">The Paradise Papers ICIJ Site</a></p>
-              </li>
-              <li>
-                <p><a target="_blank" href="https://panamapapers.icij.org/">The Panama Papers ICIJ Site</a></p>
-              </li>
-              <li>
-                <p><a target="_blank" href="https://offshoreleaks.icij.org/">The Offshore Leaks Database</a></p>
-              </li>
-              <li>
-                <p><a target="_blank" href="https://neo4j.com/docs/cypher-refcard/current/">Cypher Reference Card</a></p>
-              </li>
-              <li>
-                <p><a target="_blank" href="https://neo4j.com/developer">Neo4j Developer Documentation</a></p>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="box-max"><img class="img-responsive img-thumbnail" src="https://panamapapers.icij.org/assets/logo_icij_complete.png" width="300">
-      </div>
-      
-    <br/>
-      </div>
-      
-      
-      <div class="col-lg-8">
-        <div class="teaser teaser-3">
-          <h3>Investigative Queries</h3>
-          <p class="lead">Explore the data yourself.</p>
-          <div class="icon-holder">
-            <div class="icon sl sl-show yellow icon"></div>
-            <ul class="topic-bullets">
-              <li>Cypher query language intro</li>
-              <li>Finding companies and individuals</li>
-              <li>Path finding</li>
-            </ul>
-            <div class="clearfix"></div>
-          </div>
-          <a play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html"><button click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Run Queries</button></a>
-        </div>
-        <div class="teaser teaser-3">
+      <style type="text/css">
+      .boxes i { 
+        display: none;
+      }
+      .boxes .teaser-4 {
+        width: 18%;
+      }
+      .boxes .teaser-4 .icon-holder .topic-bullets {
+        margin-left: 5px;
+      }
+      </style>
+      <div class="col-lg-12 boxes">
+
+        <div class="teaser teaser-4">
           <h3>Shape of the Data</h3>
           <p class="lead">Understand the data model.</p>
           <div class="icon-holder">
@@ -894,9 +1039,56 @@ ORDER BY count DESC</code></pre>
             </ul>
             <div class="clearfix"></div>
           </div>
-          <a play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/datashape.html"><button click-to-code="':play https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/datashape.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Start Learning</button></a>
+          <a play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/datashape.html"><button click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/datashape.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">The Data Model</button></a>
         </div>
-        <div class="teaser teaser-3">
+
+        <div class="teaser teaser-4">
+          <h3>Pandora Papers</h3>
+          <p class="lead">Explore the latest leak yourself.</p>
+          <div class="icon-holder">
+            <div class="icon sl sl-show yellow icon"></div>
+            <ul class="topic-bullets">
+              <li>Cypher query intro</li>
+              <li>Finding companies and individuals</li>
+              <li>Power Players</li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <a play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/pandora-papers-examples.html"><button click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/pandora-papers-examples.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Pandora Papers Queries</button></a>
+        </div>
+
+        <div class="teaser teaser-4">
+          <h3>Paradise Papers</h3>
+          <p class="lead">Explore the Appleby data yourself.</p>
+          <div class="icon-holder">
+            <div class="icon sl sl-show yellow icon"></div>
+            <ul class="topic-bullets">
+              <li>Cypher query intro</li>
+              <li>Finding companies and individuals</li>
+              <li>Path finding</li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <a play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/paradise-papers-examples.html"><button click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/paradise-papers-examples.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Paradise Papers Queries</button></a>
+        </div>
+
+        <div class="teaser teaser-4">
+          <h3>Panama Papers</h3>
+          <p class="lead">Explore the Mossack Fonseca data yourself.</p>
+          <div class="icon-holder">
+            <div class="icon sl sl-show yellow icon"></div>
+            <ul class="topic-bullets">
+              <li>Cypher query intro</li>
+              <li>Explore the Panama Law Firm files</li>
+              <li>Connect the dots</li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <a play-topic="https://guides.neo4j.com/sandbox/icij-offshoreleaks/panama-papers-examples.html"><button click-to-code="':play https://guides.neo4j.com/sandbox/icij-offshoreleaks/panama-papers-examples.html'" class="btn btn-cta" style="background: #B3490E;padding:1em;color:#fff;">Panama Papers Queries</button></a>
+        </div>
+
+
+        <div class="teaser teaser-4">
           <h3>Send ICIJ a tip</h3>
           <p class="lead">Help us investigate.</p>
           <div class="icon-holder">
@@ -911,27 +1103,40 @@ ORDER BY count DESC</code></pre>
         </div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <div>
+          <h3 style="padding:10px;">Further Resources</h3>
+          <div class="ulist">
+            <ul>
+              <li>
+                <p><a target="_blank" href="https://www.icij.org/investigations/pandora-papers/">The Pandora Papers ICIJ Site</a></p>
+              </li>
+              <li>
+                <p><a target="_blank" href="https://www.icij.org/investigations/paradise-papers/">The Paradise Papers ICIJ Site</a></p>
+              </li>
+              <li>
+                <p><a target="_blank" href="https://www.icij.org/investigations/panama-papers/">The Panama Papers ICIJ Site</a></p>
+              </li>
+              <li>
+                <p><a target="_blank" href="https://offshoreleaks.icij.org/">The Offshore Leaks Database</a></p>
+              </li>
+              <li>
+                <p><a target="_blank" href="https://neo4j.com/docs/cypher-refcard/current/">Cypher Reference Card</a></p>
+              </li>
+              <li>
+                <p><a target="_blank" href="https://neo4j.com/developer">Neo4j Developer Documentation</a></p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </slide>
 
     </carousel>
-    <!--footer class="panama row">
-    <div class="columns col-sm-2"><a
-            play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/" class="sl sl-house"> Introduction</a></div>
-    <div class="columns col-sm-2">
-        <a play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html" class="sl sl-show">
-            Investigative queries</a>
-    </div>
-    <div class="columns col-sm-2">
-        <a play-topic="https://raw.githubusercontent.com/ICIJ/offshoreleaks-data-packages/main/guides/paradise-papers/documentation/examples.html" class="sl sl-network-trio">
-
-            Shape of the data</a></div>
-    <div class="columns col-sm-2"><a target="_blank" href="https://icij.org/" tooltip="Read about it."> <img
-            src="https://panamapapers.icij.org/assets/Logo_bg@2x.png" width="auto" height="28px" class="icij"/></a>
-    </div>
-    <div class="columns col-sm-2"><a target="_blank"
-                                     href="https://twitter.com/intent/tweet?original_referer=https%3A%2F%2Foffshoreleaks.icij.org%2F&amp;ref_src=twsrc%5Etfw&amp;text=Look%20what%20I%20have%20found%20in%20the%20%23Paradise%20and%20Panama%20Papers%20%40Neo4j%20graph%20database%20release%3A&amp;tw_p=tweetbutton&amp;url=https%3A%2F%2Foffshoreleaks.icij.org%2F"
-                                     tooltip="Tweet about it." class="fa fa-twitter-square"></a></div>
-</footer-->
 
 </article>

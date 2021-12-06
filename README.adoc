@@ -16,6 +16,8 @@
 :rendered-guide: https://guides.neo4j.com/sandbox/icij-offshoreleaks/index.html
 :model: documentation/img/datamodel.png
 :example: documentation/img/example.png
+:from-file-step-1: documentation/img/step-1-import-dump-file.png
+:from-file-step-2: documentation/img/step-2-create-new-db-from-file.png
 
 :todo: false
 image::{icon}[width=100]
@@ -68,18 +70,26 @@ Import flat files (csv, json, etc) using Cypher's https://neo4j.com/docs/cypher-
 endif::[]
 
 ifeval::[{use-dump-file} != false]
-==== Dump file: `{use-dump-file}`
+==== Three ways to load the dump file: `{use-dump-file}`
 
-* Drop the file into the `Files` section of a project in Neo4j Desktop. Then choose the option to `Create new DBMS from dump` option from the file options.
+* 1. Neo4j Desktop: 
 
-* Use the neo4j-admin tool to load data from the command line with the command below.
+    - Add the file into the `Files` section of a project in Neo4j Desktop. 
+
+image::{from-file-step-1}[]
+    
+    - Then choose the option to `Create new DBMS from dump` option from the file options.
+
+image::{from-file-step-2}[]
+
+* 2. Neo4j Server: Use the neo4j-admin tool to load data from the command line with the command below.
 
 [source,shell,subs=attributes]
 ----
 bin/neo4j-admin load --from {use-dump-file} [--database "database"]
 ----
 
-* Upload the dump file to Neo4j Aura via https://console.neo4j.io/#import-instructions
+* 3. Neo4j Aura: Upload the dump file to Neo4j Aura via https://console.neo4j.io/#import-instructions
 endif::[]
 
 ifeval::[{use-load-script} != false]

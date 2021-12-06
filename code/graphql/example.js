@@ -45,7 +45,6 @@ type Other {
   valid_until: String!
   intermediary_of: [Entity]
     @relationship(type: "intermediary_of", direction: OUT)
-  same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
 }
 
 type Intermediary {
@@ -56,7 +55,6 @@ type Intermediary {
   sourceID: String!
   valid_until: String!
   intermediary_of: [Entity] @relationship(type: "intermediary_of", direction: OUT)
-  same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
 }
 
 type Officer {
@@ -70,9 +68,6 @@ type Officer {
   registered_address: [Address]
     @relationship(type: "registered_address", direction: OUT)
   officer_of: [Entity] @relationship(type: "officer_of", direction: OUT)
-  connected_to: [Entity] @relationship(type: "connected_to", direction: OUT)
-  same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
-  same_id_as: [Officer] @relationship(type: "SAME_ID_AS", direction: OUT)
   num_of_connected_entities: Int
     @cypher(
       statement: """

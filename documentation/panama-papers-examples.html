@@ -28,8 +28,8 @@
               <div class="col-md-12 col-lg-6">
                 <h4>About this data</h4>
                 <div class="panama-quote">
-                  <p>The <a target="_blank" href="https://offshoreleaks.icij.org/">ICIJ Offshore Leaks database</a>, which you are working with in Neo4j, contains information on almost 800,000 offshore entities that are part of the Paradise and Panama Papers and the Offshore Leaks investigations. The data covers a long time of activities – and links to people and companies in more than 200 countries and territories.</p>
-                  <p>The real value of the database is that it <strong>strips away the secrecy</strong> that cloaks companies and trusts incorporated in tax havens and exposes the people behind them. This includes, when available, the names of the real owners of those opaque structures. In all, it reveals more than 500,000 names of people and companies behind secret offshore structures. They come from leaked records and not a standardized corporate registry, so there may be duplicates. We suggest you confirm the identities of any individuals or entities located in the database based on addresses or other identifiable information.</p>
+                  <p>The <a target="_blank" href="https://offshoreleaks.icij.org/">ICIJ Offshore Leaks database</a>, which you are working with in Neo4j, contains information on almost 785,000 offshore entities that are part of the Paradise and Panama Papers and the Offshore Leaks investigations. The data covers a long time of activities – and links to people and companies in more than 200 countries and territories.</p>
+                  <p>The real value of the database is that it <strong>strips away the secrecy</strong> that cloaks companies and trusts incorporated in tax havens and exposes the people behind them. This includes, when available, the names of the real owners of those opaque structures. In all, it reveals more than 430,000 names of people and companies behind secret offshore structures. They come from leaked records and not a standardized corporate registry, so there may be duplicates. We suggest you confirm the identities of any individuals or entities located in the database based on addresses or other identifiable information.</p>
                   <p><strong>There are legitimate uses for offshore companies and trusts. We do not intend to suggest or imply that any persons, companies or other entities included in the database have broken the law or otherwise acted improperly. If you find an error in the database please get in touch with ICIJ.</strong></p>
                 </div>
               </div>
@@ -97,7 +97,7 @@
                     <p>For example, let's say we want to discover the shortest paths between two entity officers through a set of <code>Entity</code> or <code>Address</code> nodes.  This is quite easy with Cypher, Neo4j's graph query language.</p>
                   </div>
                   <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (a:Officer),(b:Officer)
-          WHERE a.name CONTAINS 'Smith' 
+          WHERE a.name CONTAINS 'Smith' AND a.sourceID = "Panama Papers"
             AND b.name CONTAINS 'Grant'
           MATCH p=allShortestPaths((a)-[:officer_of|:intermediary_of|:registered_address*..10]-(b))
           RETURN p
@@ -175,7 +175,7 @@
                 <div class="title">Jurisdiction distribution of intermediaries in the ICIJ offshore leaks DB</div>
                 <div class="content">
                 <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:intermediary_of]-&gt;(e:Entity)
-          WHERE intermediary.name CONTAINS 'MOSSFON'
+          WHERE intermediary.name CONTAINS 'MOSSFON' AND intermediary.sourceID = "Panama Papers"
           RETURN e.jurisdiction AS country, COUNT(*) AS frequency
           ORDER BY frequency DESC LIMIT 20;</code></pre>
                 </div>
@@ -300,7 +300,8 @@ RETURN labels(node) AS type,count(*)</code></pre>
                             <div class="listingblock">
                                 <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary) WHERE size( (i)--() ) &gt; 100
+            class="cypher language-cypher">MATCH (i:Intermediary) 
+WHERE size( (i)--() ) &gt; 100 AND i.sourceID = "Panama Papers"
 MATCH (i)-[connection]-(entity)
 RETURN i.name as intermediary, type(connection) as relationship, head(labels(entity)) as type, count(*) as count
 ORDER BY count DESC LIMIT 20</code></pre>
@@ -317,7 +318,8 @@ ORDER BY count DESC LIMIT 20</code></pre>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary) WHERE i.sourceID = "Panama Papers" AND size( (i)--() ) &gt; 100
+            class="cypher language-cypher">MATCH (i:Intermediary) 
+WHERE i.sourceID = "Panama Papers" AND size( (i)--() ) &gt; 100 
 MATCH (i)-[connection]-(entity)
 RETURN i.name as intermediary, type(connection) as relationship, head(labels(entity)) as type, count(*) as count
 ORDER BY count DESC LIMIT 20</code></pre>
@@ -356,7 +358,7 @@ ORDER BY count DESC LIMIT 20</code></pre>
                         <div class="col-lg-6">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
             class="cypher language-cypher">MATCH (i:Intermediary)-[r:intermediary_of]-&gt;(e:Entity)
-WHERE i.name CONTAINS "MOSSACK"
+WHERE i.name CONTAINS "MOSSACK" AND i.sourceID = "Panama Papers"
 RETURN i, r, e LIMIT 100</code></pre>
                         </div>
                         <div class="col-lg-6">
@@ -375,11 +377,11 @@ RETURN i, r, e LIMIT 100</code></pre>
                 <br/>
                 <div>
                     <div class="paragraph">
-                        <p>Let's query for the pattern "Officer node connected to an <code>Entity</code> node through <code>connected_to</code> relationship:</p>
+                        <p>Let's query for the pattern "Officer node connected to an <code>Entity</code> node through <code>officer_of</code> relationship:</p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
-                            <pre><code>(o:Officer)-[:connected_to]-&gt;(:Entity)</code></pre>
+                            <pre><code>(o:Officer)-[:officer_of]-&gt;(:Entity)</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -391,6 +393,7 @@ RETURN i, r, e LIMIT 100</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer)-[:BENEFICIARY_OF]-&gt;(:Entity)
+WHERE o.sourceID = "Panama Papers"
 RETURN o.name, count(*) as entities
 ORDER BY entities DESC LIMIT 10</code></pre>
                         </div>
@@ -428,7 +431,7 @@ ORDER BY entities DESC LIMIT 10</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer)
-WHERE o.name CONTAINS $officer
+WHERE o.name CONTAINS $officer AND o.sourceID = "Panama Papers"
 RETURN o
 LIMIT 100</code></pre>
                         </div>
@@ -454,7 +457,7 @@ LIMIT 100</code></pre>
                     <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer)
-WHERE o.name CONTAINS $officer
+WHERE o.name CONTAINS $officer AND o.sourceID = "Panama Papers"
 MATCH path = (o)-[r]->(:Entity)
 RETURN path LIMIT 100</code></pre>
                     </div>
@@ -463,7 +466,8 @@ RETURN path LIMIT 100</code></pre>
                     <h4>2nd degree entities</h4>
                     <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer) WHERE o.name CONTAINS $officer
+        class="cypher language-cypher">MATCH (o:Officer) 
+WHERE o.name CONTAINS $officer AND o.sourceID = "Panama Papers"
 MATCH path = (o)-[]->(:Entity)
       <-[]-(:Officer)-[]->(:Entity)
 RETURN path LIMIT 100</code></pre>
@@ -497,7 +501,7 @@ RETURN path LIMIT 100</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (e:Entity)-[r]-(o:Officer)
-WHERE e.name CONTAINS $entity
+WHERE e.name CONTAINS $entity AND e.sourceID = "Panama Papers"
 RETURN *
 LIMIT 100</code></pre>
                         </div>
@@ -523,7 +527,7 @@ LIMIT 100</code></pre>
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o1:Officer)-[r1]-&gt;(e:Entity)&lt;-[r2]-(o2:Officer)
 USING JOIN ON e
-WHERE id(o1) &lt; id(o2) AND size( (o1)--&gt;() ) &gt; 10 AND size( (o2)--&gt;() ) &gt; 10
+WHERE id(o1) &lt; id(o2) AND size( (o1)--&gt;() ) &gt; 10 AND size( (o2)--&gt;() ) &gt; 10 AND o1.sourceID = "Panama Papers"
 WITH o1,o2,count(*) as freq, collect(e)[0..10] as entities
 WHERE freq &gt; 10
 WITH * ORDER BY freq DESC LIMIT 10
@@ -541,7 +545,7 @@ RETURN o1.name, o2.name, freq, [e IN entities | e.name]
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o1:Officer)-[r1]-&gt;(e:Entity)&lt;-[r2]-(o2:Officer)
 USING JOIN ON e
-WHERE id(o1) &lt; id(o2) AND NOT o1.name CONTAINS "LIMITED" AND NOT o1.name CONTAINS "Limited"
+WHERE id(o1) &lt; id(o2) AND NOT o1.name CONTAINS "LIMITED" AND NOT o1.name CONTAINS "Limited" AND o1.sourceID = "Panama Papers"
 AND NOT o2.name CONTAINS "Limited" AND NOT o2.name CONTAINS "LIMITED"
 AND size( (o1)--&gt;() ) &gt; 10 AND size( (o2)--&gt;() ) &gt; 10
 WITH o1,o2,count(*) as freq, collect(e)[0..10] as entities
@@ -560,7 +564,7 @@ RETURN o1.name, o2.name, freq, [e IN entities | e.name]
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o1:Officer)-[r1]-&gt;(e:Entity)&lt;-[r2]-(o2:Officer)
 USING JOIN ON e
-WHERE id(o1) &lt; id(o2) AND NOT o1.name CONTAINS "LIMITED" AND NOT o1.name CONTAINS "Limited"
+WHERE id(o1) &lt; id(o2) AND NOT o1.name CONTAINS "LIMITED" AND NOT o1.name CONTAINS "Limited" AND o1.sourceID = "Panama Papers"
 AND NOT o2.name CONTAINS "Limited" AND NOT o2.name CONTAINS "LIMITED"
 AND size( (o1)--&gt;() ) &gt; 10 AND size( (o2)--&gt;() ) &gt; 10
 WITH o1,o2,count(*) as freq, collect(e)[0..10] as entities
@@ -595,6 +599,7 @@ RETURN o1,o2,apoc.create.vRelationship(o1,'JOINT',{freq:freq,entities:[e IN enti
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (a:Officer),(b:Officer)
 WHERE a.name CONTAINS '<span value-key="officerOne">Smith</span>' AND b.name CONTAINS '<span value-key="officerTwo">Grant</span>'
+AND a.sourceID = "Panama Papers" AND b.sourceID = "Panama Papers"
 WITH a,b LIMIT 20000
 MATCH p=allShortestPaths((a)-[:officer_of|:intermediary_of|:registered_address*..10]-(b))
 RETURN p
@@ -631,7 +636,7 @@ LIMIT 50</code></pre>
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(other)
 WHERE a.address CONTAINS '<span value-key="city">Barcelona</span>' AND a.address CONTAINS '<span
-            value-key="state">Spain</span>'
+            value-key="state">Spain</span>' AND a.sourceID = "Panama Papers"
 RETURN a, other
 LIMIT 100</code></pre>
                         </div>
@@ -661,7 +666,7 @@ LIMIT 100</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (i:Intermediary)-[:intermediary_of]->(e:Entity)
-WHERE i.name CONTAINS '<span value-key="intermediary">MOSSACK</span>'
+WHERE i.name CONTAINS '<span value-key="intermediary">MOSSACK</span>' AND i.sourceID = "Panama Papers"
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number
 ORDER BY number DESC LIMIT 10</code></pre>
                         </div>
@@ -692,7 +697,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer)-->(e:Entity)<-[:intermediary_of]-(i:Intermediary)
+        class="cypher language-cypher">MATCH (o:Officer)-->(e:Entity)&lt;-[:intermediary_of]-(i:Intermediary)
 WHERE o.country_codes CONTAINS '<span value-key="countryCode">USA</span>' and i.sourceID = 'Panama Papers'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number
 ORDER BY number DESC LIMIT 10</code></pre>
@@ -726,6 +731,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
         class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(o:Officer),
 (o)-->(e:Entity)<-[:intermediary_of]-(i:Intermediary)
 WHERE a.address CONTAINS '<span valeue-key="city">London</span>' AND a.address CONTAINS '<span value-key="state">United Kingdom</span>'
+AND a.sourceID = "Panama Papers"
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number 
 ORDER BY number DESC LIMIT 10</code></pre>
                         </div>
@@ -757,7 +763,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
           <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
                   class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(o:Officer),
 (o)-->(e:Entity)<-[:intermediary_of]-(i:Intermediary)
-WHERE a.address CONTAINS '<span value-key="state">Isle of Man</span>'
+WHERE a.address CONTAINS '<span value-key="state">Isle of Man</span>' AND a.sourceID = "Panama Papers"
 RETURN i.name AS intermediary, count(DISTINCT e) AS number 
 ORDER BY number DESC LIMIT 10</code></pre>
                         </div>
@@ -769,6 +775,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
 
         <!-- END LOCATION QUERIES -->
 
+        <!---BEGIN FULLTEXT -->
 
         <slide class="row-fluid">
             <div class="col-sm-12">
@@ -794,8 +801,8 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="paragraph">
                         <p>In order to use the full text search feature, we indexed our data by specifying
                             all the properties we want to index.
-                            Here we create a full text index called <code>offshore</code> (we will use this name when
-                            searching in the index) with our data.
+                            Here we created a full text index called <code>search</code> (we will use this name when
+                            searching in the index) with all our data.
                             <strong>You don't have to run this, it's just here as an example</strong>
                         </p>
                     </div>
@@ -803,13 +810,20 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">CALL apoc.index.addAllNodes('offshore',{
-  Officer: ["name","countries"],
-  Intermediary:  ["name","address","countries"],
-  Address: ["address","countries"],
-  Entity: ["name", "address", "service_provider", "former_name", "company_type","countries"]})</code></pre>
+        class="cypher language-cypher">call db.index.fulltext.createNodeIndex('search',
+        ['Officer','Intermediary','Address','Entity'],
+        ['name','address'])</code></pre>
                         </div>
                     </div>
+                    <!--div class="paragraph">
+                        <p>The index needs to be populated first, which takes between 30 and 60 seconds. You can run the following command to check the current status. And re-run it with the little circular re-run icon in the frame.</p>
+                    </div>
+                    <div class="listingblock">
+                        <div class="content">
+<pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
+        class="cypher language-cypher">call db.indexDetails('search')</code></pre>
+                        </div>
+                    </div-->
                     <div class="paragraph">
                         <p>We can now use this index to search for any text contained in the properties. As a result of
                             the query you'll get the nodes with matching text.</p>
@@ -821,7 +835,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     </div>
 
                     <div class="paragraph">
-                        <p>If you enter a word into the form, all occurrences will be found (but limited to 100
+                        <p>If you enter a word into the form, all occurrences will be found (but limited to 10
                             results).</p>
                     </div>
 
@@ -835,9 +849,9 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
                             <pre mode="cypher"
-                                 class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                    class="cypher language-cypher">CALL apoc.index.search("offshore", '<span
-                                    value-key="search">Nike</span>')</code></pre>
+                            class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
+                               class="cypher language-cypher">CALL db.index.fulltext.queryNodes('search','<span
+                               value-key="search">Nike</span>',{limit:10})</code></pre>
                         </div>
                     </div>
                 </div>
@@ -852,26 +866,25 @@ ORDER BY number DESC LIMIT 10</code></pre>
                 <div>
                     <div class="paragraph">
                         <p>You can futher restrict the full text search to only searching in a particular property. In
-                            order to seach for an <code>Entity</code> incorporated by offshore service provider <em>Mossack
-                                Fonseca</em>, use the following: </p>
+                            order to seach for an <code>Entity</code> incorporated by offshore service provider <em>Appleby</em>, use the following: </p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
                             <pre mode="cypher"
                                  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                    class="cypher language-cypher">CALL apoc.index.search("offshore", "Entity.service_provider:Mossack Fonseca")</code></pre>
+                                    class="cypher language-cypher">CALL db.index.fulltext.queryNodes('search', 'name:"Appleby"',{limit:10})</code></pre>
                         </div>
                     </div>
                     <h4>Test it yourself:</h4>
                     <form>
                         <div class="node">
                             <div class="form-group">
-                                <label>Label/Type to search for:</label> <input value-for="label" value="Entity"
-                                                                                class="form-control">
+                                <!--label>Label/Type to search for:</label> <input value-for="label" value="Entity"
+                                                                                class="form-control"-->
                                 <label>Attribute to search for:</label> <input value-for="property"
-                                                                               value="service_provider"
+                                                                               value="name"
                                                                                class="form-control">
-                                <label>Word to search for:</label> <input value-for="search" value="Mossack Fonseca"
+                                <label>Word to search for:</label> <input value-for="search" value="Appleby"
                                                                           class="form-control">
                             </div>
                         </div>
@@ -880,9 +893,8 @@ ORDER BY number DESC LIMIT 10</code></pre>
                         <div class="content">
                             <pre mode="cypher"
                                  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-                                    class="cypher language-cypher">CALL apoc.index.search("offshore", "<span
-                                    value-key="label">Entity</span>.<span
-                                    value-key="property">service_provider</span>:<span value-key="search">Mossack Fonseca</span>")</code></pre>
+                                    class="cypher language-cypher">CALL db.index.fulltext.queryNodes('search', '<span
+                                    value-key="property">name</span>:"<span value-key="search">Appleby</span>"', {limit:10})</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -909,10 +921,10 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">CALL apoc.index.search("offshore", 'Address.address:"New York"')
-YIELD node AS addr
-MATCH (addr)&lt;-[:registered_address]-(entity)
-RETURN addr, entity LIMIT 50</code></pre>
+            class="cypher language-cypher">CALL db.index.fulltext.queryNodes("search", 'address:"New York"')
+            YIELD node AS addr WHERE addr.sourceID = "Panama Papers"
+            MATCH (addr:Address)&lt;-[:registered_address]-(entity)
+            RETURN addr, entity LIMIT 50</code></pre>
                         </div>
                     </div>
 
@@ -927,10 +939,10 @@ RETURN addr, entity LIMIT 50</code></pre>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">CALL apoc.index.search("offshore", "Address.address:Malta~")
-YIELD node AS addr
-MATCH (addr)&lt;-[:registered_address]-(entity)
-RETURN addr, entity LIMIT 50</code></pre>
+            class="cypher language-cypher">CALL db.index.fulltext.queryNodes("search", 'address:Malta~')
+            YIELD node AS addr WHERE addr.sourceID = "Panama Papers"
+            MATCH (addr:Address)&lt;-[:registered_address]-(entity)
+            RETURN addr, entity LIMIT 50</code></pre>
                         </div>
                     </div>
 
@@ -939,17 +951,17 @@ RETURN addr, entity LIMIT 50</code></pre>
                         <p>You might notice that there are addresses that contain the word “Barcelona” that are not in
                             Barcelona, Spain.</p>
 
-                        <p>We can further specify that we want the text to contain both the word Barcelona, and the word
-                            Spain:</p>
+                        <p>We can further specify that we want the text to contain both the word Barcelona, AND the word
+                            Spain with:</p>
                     </div>
 
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">CALL apoc.index.search("offshore", "+Address.address:Barcelona~ +Spain~")
-YIELD node AS addr
-MATCH (addr)&lt;-[:registered_address]-(entity)
-RETURN addr, entity LIMIT 50</code></pre>
+            class="cypher language-cypher">CALL db.index.fulltext.queryNodes("search", '+name:Barcelona +name:Spain')
+            YIELD node AS addr WHERE addr.sourceID = "Panama Papers"
+            MATCH (addr:Address)&lt;-[:registered_address]-(entity)
+            RETURN addr, entity LIMIT 50</code></pre>
                         </div>
                     </div>
 
@@ -963,6 +975,8 @@ RETURN addr, entity LIMIT 50</code></pre>
             </div>
         </slide>
 
+        <!-- END FULLTEXT -->
+        <!-- BEGIn ALGOS -->
 
         <slide class="row-fluid">
             <div class="col-sm-12">
@@ -977,16 +991,17 @@ RETURN addr, entity LIMIT 50</code></pre>
                     </div>
                     <div class="paragraph">
                         <p>The algorithm can also be used as way of measuring the importance of entities in a network.
-                            Let’s use PageRank to find the top 20 ranked entities in the dataset.</p>
+                            Let’s use PageRank to find the top 20 ranked entities in the dataset (this runs for about 20s).</p>
                     </div>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">CALL algo.pageRank.stream() YIELD node, score
-WHERE node:Entity
-RETURN node.name AS entity, score
-ORDER BY score DESC
-LIMIT 20</code></pre>
+        class="cypher language-cypher">CALL gds.pageRank.stream({nodeProjection:'*',relationshipProjection:'*'}) YIELD nodeId, score
+        WITH gds.util.asNode(nodeId) as node, score
+        WHERE node:Entity AND node.sourceID = "Panama Papers"
+        RETURN node.name AS entity, score
+        ORDER BY score DESC
+        LIMIT 20</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -999,8 +1014,9 @@ LIMIT 20</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">CALL algo.pageRank.stream() YIELD node as address, score
-WHERE address:Address
+        class="cypher language-cypher">CALL gds.pageRank.stream({nodeProjection:'*',relationshipProjection:'*'}) YIELD nodeId, score
+        WITH gds.util.asNode(nodeId) as node, score
+        WHERE node:Address AND node.sourceID = "Panama Papers"
 WITH * ORDER BY score DESC  LIMIT 10
 MATCH (address)&lt;-[:registered_address]-(e:Entity)
 RETURN address.address, count(e) AS count
@@ -1011,6 +1027,7 @@ ORDER BY count DESC</code></pre>
             </div>
         </slide>
 
+        <!-- END ALGOS -->
 
         <slide class="row-fluid">
             <div class="col-sm-12">

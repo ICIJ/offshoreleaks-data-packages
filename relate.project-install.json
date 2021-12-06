@@ -11,6 +11,11 @@
             "dumpFile": "data/icij-offshoreleaks-43.dump",
             "targetNeo4jVersion": "^4.3",
             "plugins": ["apoc", "graph-data-science"]
+        },
+        {
+            "dumpFile": "data/icij-offshoreleaks-44.dump",
+            "targetNeo4jVersion": "^4.4",
+            "plugins": ["apoc", "graph-data-science"]
         }
     ]
 }

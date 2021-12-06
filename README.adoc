@@ -7,10 +7,10 @@
 :demodb: false
 :data: false
 :use-load-script: false
-:use-dump-file: data/icij-offshoreleaks-43.dump
+:use-dump-file: data/icij-offshoreleaks-44.dump
 :zip-file: false
 :use-plugin: false
-:target-db-version: 4.3
+:target-db-version: 4.4
 :bloom-perspective: bloom/icij-offshoreleaks.bloom-perspective
 :guide: documentation/icij-offshoreleaks.neo4j-browser-guide
 :rendered-guide: https://guides.neo4j.com/sandbox/icij-offshoreleaks/index.html

@@ -109,7 +109,7 @@
     <h4>Jurisdiction distribution of Appleby Clients</h4>
     <div class="row">
         <div class="col-lg-6">
-          <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:connected_to]-&gt;(e:Entity)
+          <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:intermediary_of]-&gt;(e:Entity)
 WHERE intermediary.name CONTAINS 'Appleby'
 RETURN e.jurisdiction_description AS country, COUNT(*) AS frequency
 ORDER BY frequency DESC LIMIT 20;</code></pre>
@@ -283,7 +283,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
       </div>
       <div class="listingblock">
       <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:connected_to]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:intermediary_of]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
       </div>
       </div>
       <div class="ulist">
@@ -307,7 +307,7 @@ RETURN fromLabel, relType,toLabels,frequency ORDER BY frequency DESC;</code></pr
       </div>
       <div class="listingblock">
       <div class="content">
-      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:officer_of]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
+      <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH p=(:Intermediary)-[:intermediary_of]-&gt;(:Entity) RETURN p LIMIT 25;</code></pre>
       </div>
       </div>
   	</div>

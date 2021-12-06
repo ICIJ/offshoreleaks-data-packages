@@ -127,11 +127,11 @@
                 <h4>Graph Patterns</h4>
                 <div class="paragraph">
                   <p>Neo4j’s query language, Cypher, is centered around <strong>graph patterns</strong> which represents entities with parentheses, for example, 
-                <code>(e:Entity)</code> and connections with arrows, for example <code>-[:connected_to]-&gt;</code>.
-                  <code>:Entity</code> and <code>:connected_to</code> are the types of the entity and the connection, respectively.
+                <code>(e:Entity)</code> and connections with arrows, for example <code>-[:intermediary_of]-&gt;</code>.
+                  <code>:Entity</code> and <code>:intermediary_of</code> are the types of the entity and the connection, respectively.
                 </div>
                 <div class="paragraph">
-                  <p>Here is an example pattern: <code>(:Intermediary)-[:connected_to]-&gt;(:Entity)</code>.
+                  <p>Here is an example pattern: <code>(:Intermediary)-[:intermediary_of]-&gt;(:Entity)</code>.
                   These patterns may be found with the <code>MATCH</code> clause.</p>
                 </div>
           
@@ -173,7 +173,7 @@
                 <div class="listingblock">
                 <div class="title">Jurisdiction distribution of intermediaries in the ICIJ offshore leaks DB</div>
                 <div class="content">
-                <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:connected_to]-&gt;(e:Entity)
+                <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:intermediary_of]-&gt;(e:Entity)
           WHERE intermediary.name CONTAINS 'Cordero'
           RETURN e.jurisdiction AS country, COUNT(*) AS frequency
           ORDER BY frequency DESC LIMIT 20;</code></pre>
@@ -354,7 +354,7 @@ ORDER BY count DESC LIMIT 20</code></pre>
                     <div class="row">
                         <div class="col-lg-6">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary)-[r:connected_to]-&gt;(e:Entity)
+            class="cypher language-cypher">MATCH (i:Intermediary)-[r:intermediary_of]-&gt;(e:Entity)
 WHERE i.name CONTAINS "Cordero"
 RETURN i, r, e LIMIT 100</code></pre>
                         </div>
@@ -378,7 +378,7 @@ RETURN i, r, e LIMIT 100</code></pre>
                     </div>
                     <div class="listingblock">
                         <div class="content">
-                            <pre><code>(o:Officer)-[:connected_to]-&gt;(:Entity)</code></pre>
+                            <pre><code>(o:Officer)-[:officer_of]-&gt;(:Entity)</code></pre>
                         </div>
                     </div>
                     <div class="paragraph">
@@ -389,7 +389,7 @@ RETURN i, r, e LIMIT 100</code></pre>
                         <h4>Officers with most entities</h4>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer)-[:connected_to]-&gt;(:Entity)
+        class="cypher language-cypher">MATCH (o:Officer)-[:officer_of]-&gt;(:Entity)
 RETURN o.name, count(*) as entities
 ORDER BY entities DESC LIMIT 10</code></pre>
                         </div>
@@ -655,7 +655,7 @@ LIMIT 100</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (i:Intermediary)-[:connected_to]->(e:Entity)
+        class="cypher language-cypher">MATCH (i:Intermediary)-[:intermediary_of]->(e:Entity)
 WHERE i.name CONTAINS '<span value-key="intermediary">Appleby</span>'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number
 ORDER BY number DESC LIMIT 10</code></pre>
@@ -686,7 +686,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
                     <div class="listingblock">
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer)--&gt;(e:Entity)&lt;-[:connected_to]-(i:Intermediary)
+        class="cypher language-cypher">MATCH (o:Officer)--&gt;(e:Entity)&lt;-[:intermediary_of]-(i:Intermediary)
 WHERE o.country_codes CONTAINS '<span value-key="countryCode">USA</span>'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number
 ORDER BY number DESC LIMIT 10</code></pre>
@@ -717,7 +717,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(o:Officer),
-(o)--&gt;(e:Entity)&lt;-[:connected_to]-(i:Intermediary)
+(o)--&gt;(e:Entity)&lt;-[:intermediary_of]-(i:Intermediary)
 WHERE a.address CONTAINS '<span valeue-key="city">London</span>' AND a.countries CONTAINS '<span value-key="state">United Kingdom</span>'
 RETURN e.jurisdiction_description AS jurisdiction, count(*) AS number 
 ORDER BY number DESC LIMIT 10</code></pre>
@@ -749,7 +749,7 @@ ORDER BY number DESC LIMIT 10</code></pre>
                         <div class="content">
           <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
                   class="cypher language-cypher">MATCH (a:Address)<-[:registered_address]-(o:Officer),
-(o)--&gt;(e:Entity)&lt;-[:connected_to]-(i:Intermediary)
+(o)--&gt;(e:Entity)&lt;-[:intermediary_of]-(i:Intermediary)
 WHERE a.address CONTAINS '<span value-key="state">Isle of Man</span>'
 RETURN i.name AS intermediary, count(DISTINCT e) AS number 
 ORDER BY number DESC LIMIT 10</code></pre>

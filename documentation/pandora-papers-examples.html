@@ -96,8 +96,8 @@
                     <p>For example, let's say we want to discover the shortest paths between two entity officers through a set of <code>Entity</code> or <code>Address</code> nodes.  This is quite easy with Cypher, Neo4j's graph query language.</p>
                   </div>
                   <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (a:Officer),(b:Officer)
-          WHERE a.name CONTAINS 'Ross, Jr' 
-            AND b.name CONTAINS 'Grant'
+          WHERE a.name CONTAINS 'Ross, Jr' AND a.sourceID STARTS WITH "Pandora Papers"
+            AND b.name CONTAINS 'Grant' AND b.sourceID STARTS WITH "Pandora Papers"
           MATCH p=allShortestPaths((a)-[:officer_of|intermediary_of|registered_address*..10]-(b))
           RETURN p
           LIMIT 50</code></pre>
@@ -174,7 +174,7 @@
                 <div class="title">Jurisdiction distribution of intermediaries in the ICIJ offshore leaks DB</div>
                 <div class="content">
                 <pre mode="cypher"  class="highlight pre-scrollable code runnable standalone-example ng-binding"><code class="cypher language-cypher">MATCH (intermediary:Intermediary)-[:intermediary_of]-&gt;(e:Entity)
-          WHERE intermediary.name CONTAINS 'Cordero'
+          WHERE intermediary.name CONTAINS 'Cordero' AND e.sourceID STARTS WITH "Pandora Papers"
           RETURN e.jurisdiction AS country, COUNT(*) AS frequency
           ORDER BY frequency DESC LIMIT 20;</code></pre>
                 </div>
@@ -286,7 +286,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (node)
+            class="cypher language-cypher">MATCH (node) WHERE node.sourceID STARTS WITH "Pandora Papers"
 RETURN labels(node) AS type,count(*)</code></pre>
                                     </div>
                                     <div class="col-lg-6">
@@ -299,7 +299,7 @@ RETURN labels(node) AS type,count(*)</code></pre>
                             <div class="listingblock">
                                 <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary) WHERE size( (i)--() ) &gt; 100
+            class="cypher language-cypher">MATCH (i:Intermediary) WHERE size( (i)--() ) &gt; 100 AND i.sourceID STARTS WITH "Pandora Papers"
 MATCH (i)-[connection]-(entity)
 RETURN i.name as intermediary, type(connection) as relationship, head(labels(entity)) as type, count(*) as count
 ORDER BY count DESC LIMIT 20</code></pre>
@@ -316,7 +316,7 @@ ORDER BY count DESC LIMIT 20</code></pre>
                     <div class="listingblock">
                         <div class="content">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-            class="cypher language-cypher">MATCH (i:Intermediary) WHERE i.sourceID CONTAINS "Pandora Papers" AND size( (i)--() ) &gt; 100
+            class="cypher language-cypher">MATCH (i:Intermediary) WHERE i.sourceID STARTS WITH "Pandora Papers" AND size( (i)--() ) &gt; 100 AND i.sourceID STARTS WITH "Pandora Papers"
 MATCH (i)-[connection]-(entity)
 RETURN i.name as intermediary, type(connection) as relationship, head(labels(entity)) as type, count(*) as count
 ORDER BY count DESC LIMIT 20</code></pre>
@@ -355,7 +355,7 @@ ORDER BY count DESC LIMIT 20</code></pre>
                         <div class="col-lg-6">
     <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
             class="cypher language-cypher">MATCH (i:Intermediary)-[r:intermediary_of]-&gt;(e:Entity)
-WHERE i.name CONTAINS "Cordero"
+WHERE i.name CONTAINS "Cordero" AND e.sourceID STARTS WITH "Pandora Papers"
 RETURN i, r, e LIMIT 100</code></pre>
                         </div>
                         <div class="col-lg-6">
@@ -389,7 +389,7 @@ RETURN i, r, e LIMIT 100</code></pre>
                         <h4>Officers with most entities</h4>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer)-[:officer_of]-&gt;(:Entity)
+        class="cypher language-cypher">MATCH (o:Officer)-[:officer_of]-&gt;(:Entity) WHERE o.sourceID STARTS WITH "Pandora Papers"
 RETURN o.name, count(*) as entities
 ORDER BY entities DESC LIMIT 10</code></pre>
                         </div>
@@ -427,7 +427,7 @@ ORDER BY entities DESC LIMIT 10</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer)
-WHERE o.name CONTAINS $officer
+WHERE o.name CONTAINS $officer AND o.sourceID STARTS WITH "Pandora Papers"
 RETURN o
 LIMIT 100</code></pre>
                         </div>
@@ -453,7 +453,7 @@ LIMIT 100</code></pre>
                     <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o:Officer)
-WHERE o.name CONTAINS $officer
+WHERE o.name CONTAINS $officer AND o.sourceID STARTS WITH "Pandora Papers"
 MATCH path = (o)-[r]-&gt;(:Entity)
 RETURN path LIMIT 100</code></pre>
                     </div>
@@ -462,7 +462,8 @@ RETURN path LIMIT 100</code></pre>
                     <h4>2nd degree entities</h4>
                     <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
-        class="cypher language-cypher">MATCH (o:Officer) WHERE o.name CONTAINS $officer
+        class="cypher language-cypher">MATCH (o:Officer) 
+WHERE o.name CONTAINS $officer o.sourceID STARTS WITH "Pandora Papers"
 MATCH path = (o)-[]->(:Entity)
       &lt;-[]-(:Officer)-[]-&gt;(:Entity)
 RETURN path LIMIT 100</code></pre>
@@ -496,7 +497,7 @@ RETURN path LIMIT 100</code></pre>
                         <div class="content">
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (e:Entity)-[r]-(o:Officer)
-WHERE e.name CONTAINS $entity
+WHERE e.name CONTAINS $entity AND e.sourceID STARTS WITH "Pandora Papers"
 RETURN *
 LIMIT 100</code></pre>
                         </div>
@@ -522,7 +523,7 @@ LIMIT 100</code></pre>
 <pre mode="cypher" class="highlight pre-scrollable code runnable standalone-example ng-binding"><code
         class="cypher language-cypher">MATCH (o1:Officer)-[r1]-&gt;(e:Entity)&lt;-[r2]-(o2:Officer)
 USING JOIN ON e
-WHERE id(o1) &lt; id(o2) AND size( (o1)--&gt;() ) &gt; 10 AND size( (o2)--&gt;() ) &gt; 10
+WHERE id(o1) &lt; id(o2) AND size( (o1)--&gt;() ) &gt; 10 AND size( (o2)--&gt;() ) &gt; 10 AND o1.sourceID STARTS WITH "Pandora Papers"
 WITH o1,o2,count(*) as freq, collect(e)[0..10] as entities
 WHERE freq &gt; 10
 WITH * ORDER BY freq DESC LIMIT 10

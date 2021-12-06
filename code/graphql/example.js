@@ -55,7 +55,7 @@ type Intermediary {
   node_id: String!
   sourceID: String!
   valid_until: String!
-  connected_to: [Entity] @relationship(type: "connected_to", direction: OUT)
+  intermediary_of: [Entity] @relationship(type: "intermediary_of", direction: OUT)
   same_name_as: [Entity] @relationship(type: "SAME_NAME_AS", direction: OUT)
 }
 

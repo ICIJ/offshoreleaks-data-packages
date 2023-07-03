@@ -89,7 +89,7 @@ image::{from-file-step-2}[]
 bin/neo4j-admin load --from {use-dump-file} [--database "database"]
 ----
 
-* 3. Neo4j Aura: Upload the dump file to Neo4j Aura via https://console.neo4j.io/#import-instructions
+* 3. Neo4j Aura: Upload the dump file to Neo4j Aura via https://workspace-preview.neo4j.io/workspace/import
 endif::[]
 
 ifeval::[{use-load-script} != false]

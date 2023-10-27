@@ -2,3 +2,5 @@
 data/icij-offshoreleaks-43.dump filter=lfs diff=lfs merge=lfs -text
 data/icij-offshoreleaks-44.dump filter=lfs diff=lfs merge=lfs -text
 data/icij-offshoreleaks-42.dump filter=lfs diff=lfs merge=lfs -text
+*dump filter=lfs diff=lfs merge=lfs -text
+*zip filter=lfs diff=lfs merge=lfs -text
